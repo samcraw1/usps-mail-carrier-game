@@ -61,6 +61,25 @@ public class TileMap {
         return tileType == 2 || tileType == 3;
     }
 
+    // Vehicle collision - truck can ONLY drive on road (1) or crosswalk (5).
+    public boolean isSolidForVehicle(int playerX, int playerY, int playerSize) {
+        int leftCol   = playerX / tileSize;
+        int rightCol  = (playerX + playerSize - 1) / tileSize;
+        int topRow    = playerY / tileSize;
+        int bottomRow = (playerY + playerSize - 1) / tileSize;
+
+        if (leftCol < 0 || rightCol >= cols || topRow < 0 || bottomRow >= rows) {
+            return true;
+        }
+
+        int tl = mapData[topRow][leftCol];
+        int tr = mapData[topRow][rightCol];
+        int bl = mapData[bottomRow][leftCol];
+        int br = mapData[bottomRow][rightCol];
+
+        return !isRoad(tl) || !isRoad(tr) || !isRoad(bl) || !isRoad(br);
+    }
+
     public void setTile(int row, int col, int newType) {
         mapData[row][col] = newType;
     }

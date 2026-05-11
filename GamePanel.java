@@ -10,12 +10,29 @@ public class GamePanel extends JPanel implements Runnable {
     Thread gameThread;
     Player carrier;
     KeyHandler keyH = new KeyHandler();
-    TileMap tileMap = new TileMap("assets/map01.txt");
-    NPC oldlady = new NPC("Mrs. Johnson", 200, 200, "Thank you for delivering on time!");
-    NPC dog = new NPC("Rover", 300, 300, "Woof! Thanks for the treats!");
+    TileMap tileMap;                                     // initialized inside loadLevel()
+    NPC oldlady = new NPC("Mrs. Johnson", 200, 200, "Thank you for delivering on time!", "person");
+    NPC dog = new NPC("Rover", 300, 300, "Woof! Thanks for the treats!", "dog");
     String currentDialogue = "";   // holds whatever NPC is talking right now
     ArrayList<House> houses = new ArrayList<>();
-    
+
+    // NEW: level progression state
+    int currentLevel = 0;
+    String[] mapFiles = {
+        "assets/map01.txt",
+        "assets/map02.txt",
+        "assets/map03.txt",
+        "assets/map04.txt"   // driving level
+    };
+
+    Color[] houseColors = {
+        new Color(200, 100, 50),
+        new Color(150, 150, 50),
+        new Color(100, 200, 50),
+        new Color(50, 150, 200),
+        new Color(200, 50, 150)
+    };
+
     // CONSTRUCTOR
     public GamePanel() {
         this.setPreferredSize(new Dimension(768, 576));
@@ -25,22 +42,26 @@ public class GamePanel extends JPanel implements Runnable {
 
         carrier = new Player("Sam");
 
-         Color[] houseColors = {
-            new Color(200, 100, 50),
-            new Color(150, 150, 50),
-            new Color(100, 200, 50),
-            new Color(50, 150, 200),
-            new Color(200, 50, 150)
-        };
+        // Load the first level (map01).
+        loadLevel(0);
+    }
 
+    // METHOD - load a map by index. Resets player + houses + tilemap.
+    // Called from constructor (level 0) and from update() when player advances.
+    public void loadLevel(int levelIdx) {
+        currentLevel = levelIdx;
 
-        // create House objects for each house tile on the map
+        // Build the new tilemap from this level's file.
+        tileMap = new TileMap(mapFiles[levelIdx]);
+
+        // Reset the houses list and rebuild from the new map.
+        houses.clear();
         for (int row = 0; row < tileMap.rows; row++) {
             for (int col = 0; col < tileMap.cols; col++) {
                 if (tileMap.mapData[row][col] == 3) {
                     Color randomColor = houseColors[(row * tileMap.cols + col) % houseColors.length];
 
-                    // find nearest road in each direction (looking up to the edge of the map)
+                    // find nearest road in each direction
                     int upDist = Integer.MAX_VALUE;
                     for (int r = row - 1; r >= 0; r--) {
                         int t = tileMap.mapData[r][col];
@@ -72,6 +93,22 @@ public class GamePanel extends JPanel implements Runnable {
                     houses.add(new House(col * tileMap.tileSize, row * tileMap.tileSize, row * tileMap.cols + col, randomColor, dir, min));
                 }
             }
+        }
+
+        // Reset player position + packages for the new level.
+        carrier.packages = 5;
+
+        // Driving level (index 3) - vehicle mode + faster + start ON the road.
+        if (levelIdx == 3) {
+            carrier.inVehicle = true;
+            carrier.speed = 8;
+            carrier.x = 48;       // road tile at column 1
+            carrier.y = 48;       // road tile at row 1
+        } else {
+            carrier.inVehicle = false;
+            carrier.speed = 4;
+            carrier.x = 100;
+            carrier.y = 100;
         }
     }
 
@@ -107,7 +144,11 @@ public class GamePanel extends JPanel implements Runnable {
         if (keyH.rightPressed) newX += carrier.speed;
 
         // only actually move if the new spot isn't a wall
-        if (!tileMap.isSolid(newX, newY, 48)) {
+        // (vehicle mode uses road-only collision; walking uses regular collision)
+        boolean blocked = carrier.inVehicle
+                ? tileMap.isSolidForVehicle(newX, newY, 48)
+                : tileMap.isSolid(newX, newY, 48);
+        if (!blocked) {
             carrier.x = newX;
             carrier.y = newY;
         }
@@ -122,6 +163,12 @@ public class GamePanel extends JPanel implements Runnable {
         if (keyH.tPressed) {
             tryTalk();
             keyH.tPressed = false;
+        }
+
+        // NEW: if route complete + SPACE pressed + more levels exist, advance
+        if (carrier.packages == 0 && keyH.spacePressed && currentLevel + 1 < mapFiles.length) {
+            loadLevel(currentLevel + 1);
+            keyH.spacePressed = false;   // reset so we only advance once per press
         }
     }
 
@@ -163,7 +210,7 @@ public class GamePanel extends JPanel implements Runnable {
             int col = spot[1];
 
             // make sure this tile is actually on the map
-            if (row >= 0 && row < 10 && col >= 0 && col < 10) {
+            if (row >= 0 && row < tileMap.rows && col >= 0 && col < tileMap.cols) {
 
                 // is this neighbor an undelivered house, and do we have packages?
                 if (tileMap.mapData[row][col] == 3 && carrier.packages > 0) {
@@ -188,10 +235,10 @@ public class GamePanel extends JPanel implements Runnable {
         oldlady.draw(g);
         dog.draw(g);
         carrier.draw(g);
-        
 
-        // show package count in top corner
+        // show package count + level in top corner
         g.setColor(Color.WHITE);
+        g.drawString("Level " + (currentLevel + 1) + " / " + mapFiles.length, 30, 30);
         g.drawString("Packages left: " + carrier.packages, 600, 30);
 
         // show NPC dialogue at the bottom if there is one
@@ -207,9 +254,16 @@ public class GamePanel extends JPanel implements Runnable {
             g.setColor(new Color(0, 0, 0, 200));   // semi-transparent black overlay
             g.fillRect(0, 0, 768, 576);
             g.setColor(Color.GREEN);
-            g.drawString("ROUTE COMPLETE!", 340, 280);
+            g.drawString("ROUTE COMPLETE!", 340, 270);
             g.setColor(Color.WHITE);
-            g.drawString("All packages delivered. Great job!", 290, 310);
+
+            // Different message depending on whether more levels exist
+            if (currentLevel + 1 < mapFiles.length) {
+                g.drawString("All packages delivered. Press SPACE for the next route!", 240, 300);
+            } else {
+                g.setColor(Color.YELLOW);
+                g.drawString("ALL ROUTES COMPLETE! You finished every neighborhood!", 230, 300);
+            }
         }
     }
 }

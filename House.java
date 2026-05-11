@@ -77,11 +77,8 @@ public class House {
                 g.fillRect(i, yardBottom - 8, 1, 8);
             }
             g.drawRect(pathLeft, yardBottom - 8, pathRight - pathLeft - 1, 7);
-            // mailbox on the right
-            g.setColor(new Color(60, 40, 30));
-            g.fillRect(yardRight - 6, yardBottom - 6, 2, 6);
-            g.setColor(houseColor);
-            g.fillRect(yardRight - 8, yardBottom - 8, 6, 4);
+            // mailbox on the right (bigger USPS-style)
+            drawMailbox(g, yardRight - 14, yardBottom - 18);
         } else if (direction.equals("UP")) {
             int yardTop = y - (distance - 1) * 48;
             int yardBottom = y + 4;       // end right at house top
@@ -115,10 +112,8 @@ public class House {
                 g.fillRect(i, yardTop, 1, 8);
             }
             g.drawRect(pathLeft, yardTop, pathRight - pathLeft - 1, 7);
-            g.setColor(new Color(60, 40, 30));
-            g.fillRect(yardRight - 6, yardTop, 2, 6);
-            g.setColor(houseColor);
-            g.fillRect(yardRight - 8, yardTop + 4, 6, 4);
+            // mailbox on the right (bigger USPS-style)
+            drawMailbox(g, yardRight - 14, yardTop + 8);
         } else if (direction.equals("LEFT")) {
             int yardLeft = x - (distance - 1) * 48;
             int yardRight = x + 4;        // end right at house left
@@ -151,10 +146,8 @@ public class House {
                 g.fillRect(yardLeft, i, 8, 1);
             }
             g.drawRect(yardLeft, pathTop, 7, pathBottom - pathTop - 1);
-            g.setColor(new Color(60, 40, 30));
-            g.fillRect(yardLeft, yardBottom - 6, 6, 2);
-            g.setColor(houseColor);
-            g.fillRect(yardLeft + 4, yardBottom - 8, 4, 6);
+            // mailbox on the bottom-left (bigger USPS-style)
+            drawMailbox(g, yardLeft + 4, yardBottom - 18);
         } else if (direction.equals("RIGHT")) {
             int yardLeft = x + 44;        // start right at house right
             int yardRight = x + distance * 48;
@@ -187,10 +180,8 @@ public class House {
                 g.fillRect(yardRight - 8, i, 8, 1);
             }
             g.drawRect(yardRight - 8, pathTop, 7, pathBottom - pathTop - 1);
-            g.setColor(new Color(60, 40, 30));
-            g.fillRect(yardRight - 6, yardBottom - 6, 6, 2);
-            g.setColor(houseColor);
-            g.fillRect(yardRight - 8, yardBottom - 8, 4, 6);
+            // mailbox on the bottom-right (bigger USPS-style)
+            drawMailbox(g, yardRight - 14, yardBottom - 18);
         }
 
         // ===== HIPPED ROOF (4 triangular faces meeting at center) =====
@@ -246,5 +237,39 @@ public class House {
             g.fillRect(x + 40, y + 6, 2, 4);
             g.fillRect(x + 42, y + 8, 4, 2);
         }
+    }
+
+    // Reusable mailbox - USPS blue with red flag.
+    // (mx, my) = top-left of the box itself.
+    private void drawMailbox(Graphics g, int mx, int my) {
+        // wooden post (3x14)
+        g.setColor(new Color(80, 55, 30));
+        g.fillRect(mx + 6, my + 10, 3, 14);
+        g.setColor(new Color(50, 30, 15));            // post shadow
+        g.fillRect(mx + 8, my + 10, 1, 14);
+
+        // USPS-blue mailbox body (16x12)
+        g.setColor(new Color(0, 75, 135));
+        g.fillRect(mx, my, 16, 12);
+        g.setColor(new Color(40, 110, 170));          // top highlight
+        g.fillRect(mx, my, 16, 2);
+        g.setColor(new Color(0, 50, 90));             // bottom shadow
+        g.fillRect(mx, my + 10, 16, 2);
+
+        // small white USPS stripe across the front (decal)
+        g.setColor(new Color(220, 220, 220));
+        g.fillRect(mx + 2, my + 5, 12, 2);
+
+        // door slot (dark line)
+        g.setColor(new Color(0, 30, 60));
+        g.fillRect(mx + 2, my + 4, 12, 1);
+
+        // RED FLAG raised on the right side
+        g.setColor(new Color(60, 40, 25));
+        g.fillRect(mx + 16, my - 2, 1, 8);            // thin pole
+        g.setColor(new Color(220, 50, 50));
+        g.fillRect(mx + 17, my - 2, 5, 4);            // flag
+        g.setColor(new Color(160, 30, 30));
+        g.fillRect(mx + 17, my + 1, 5, 1);            // flag shadow
     }
 }

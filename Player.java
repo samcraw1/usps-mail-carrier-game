@@ -13,7 +13,8 @@ public class Player {
     int speed;      // how fast they move (pixels per frame)
     String name;
     int packages;   // how many packages they're carrying
-    BufferedImage sprite;  // the player's image
+    BufferedImage sprite;
+    boolean inVehicle = false;  // whether the player is in a vehicle
 
 
 
@@ -34,15 +35,19 @@ public class Player {
     // METHOD — draws the player on screen
     // To switch between PNG and code-drawn versions, change which line is commented out
     public void draw(Graphics g) {
-        // drop shadow oval under the carrier (semi-transparent black)
-        g.setColor(new Color(0, 0, 0, 100));
-        g.fillOval(x + 6, y + 38, 36, 10);
+        if (inVehicle) {
+            drawTruck(g);
+        } else {
+            // drop shadow oval under the carrier (semi-transparent black)
+            g.setColor(new Color(0, 0, 0, 100));
+            g.fillOval(x + 6, y + 38, 36, 10);
 
-        // V1: ChatGPT PNG sprite
-        // g.drawImage(sprite, x - 4, y - 4, 56, 56, null);
+            // V1: ChatGPT PNG sprite
+            // g.drawImage(sprite, x - 4, y - 4, 56, 56, null);
 
-        // V2: code-drawn pixel art mail carrier
-        drawCodeCarrier(g);
+            // V2: code-drawn pixel art mail carrier
+            drawCodeCarrier(g);
+        }
     }
 
     // V2 — 64x64 pixel art mail carrier with shading
@@ -113,5 +118,59 @@ public class Player {
         g.setColor(new Color(50, 50, 50));          // shoe top highlight
         g.fillRect(px + 20, py + 58, 9, 1);
         g.fillRect(px + 35, py + 58, 9, 1);
+    }
+
+    // Top-down USPS LLV mail truck - drawn over the 48x48 player hitbox.
+    public void drawTruck(Graphics g) {
+        int tx = x - 8;
+        int ty = y - 8;
+
+        // shadow under the truck
+        g.setColor(new Color(0, 0, 0, 100));
+        g.fillOval(tx + 4, ty + 56, 56, 8);
+
+        // wheels (4 black rectangles at the corners)
+        g.setColor(new Color(15, 15, 15));
+        g.fillRect(tx + 4,  ty + 12, 6, 12);   // front-left
+        g.fillRect(tx + 54, ty + 12, 6, 12);   // front-right
+        g.fillRect(tx + 4,  ty + 40, 6, 12);   // rear-left
+        g.fillRect(tx + 54, ty + 40, 6, 12);   // rear-right
+
+        // main body (white box)
+        g.setColor(new Color(245, 245, 245));
+        g.fillRect(tx + 8, ty + 8, 48, 48);
+
+        // roof shadow on right edge for depth
+        g.setColor(new Color(210, 210, 210));
+        g.fillRect(tx + 50, ty + 8, 6, 48);
+
+        // top highlight along the front
+        g.setColor(new Color(255, 255, 255));
+        g.fillRect(tx + 8, ty + 8, 48, 3);
+
+        // USPS blue stripe along the side (the iconic LLV stripe)
+        g.setColor(new Color(0, 75, 135));
+        g.fillRect(tx + 8, ty + 30, 48, 6);
+
+        // red stripe under the blue
+        g.setColor(new Color(200, 40, 40));
+        g.fillRect(tx + 8, ty + 36, 48, 2);
+
+        // windshield at the front (top of vehicle)
+        g.setColor(new Color(40, 70, 100));
+        g.fillRect(tx + 14, ty + 12, 36, 10);
+        g.setColor(new Color(80, 130, 170));        // glass highlight
+        g.fillRect(tx + 14, ty + 12, 36, 2);
+
+        // headlights (small yellow rectangles at front corners)
+        g.setColor(new Color(250, 220, 100));
+        g.fillRect(tx + 10, ty + 9, 5, 3);
+        g.fillRect(tx + 49, ty + 9, 5, 3);
+
+        // USPS eagle decal area (small white box on the side stripe)
+        g.setColor(new Color(245, 245, 245));
+        g.fillRect(tx + 26, ty + 31, 12, 4);
+        g.setColor(new Color(0, 75, 135));          // dark blue text
+        g.drawString("USPS", tx + 26, ty + 35);
     }
 }
