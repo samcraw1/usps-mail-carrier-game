@@ -242,34 +242,34 @@ public class House {
     // Reusable mailbox - USPS blue with red flag.
     // (mx, my) = top-left of the box itself.
     private void drawMailbox(Graphics g, int mx, int my) {
-        // wooden post (3x14)
+        // wooden post (4x18)
         g.setColor(new Color(80, 55, 30));
-        g.fillRect(mx + 6, my + 10, 3, 14);
+        g.fillRect(mx + 9, my + 16, 4, 18);
         g.setColor(new Color(50, 30, 15));            // post shadow
-        g.fillRect(mx + 8, my + 10, 1, 14);
+        g.fillRect(mx + 12, my + 16, 1, 18);
 
-        // USPS-blue mailbox body (16x12)
+        // USPS-blue mailbox body (24x18) - bigger and more visible
         g.setColor(new Color(0, 75, 135));
-        g.fillRect(mx, my, 16, 12);
+        g.fillRect(mx, my, 24, 18);
         g.setColor(new Color(40, 110, 170));          // top highlight
-        g.fillRect(mx, my, 16, 2);
+        g.fillRect(mx, my, 24, 3);
         g.setColor(new Color(0, 50, 90));             // bottom shadow
-        g.fillRect(mx, my + 10, 16, 2);
+        g.fillRect(mx, my + 15, 24, 3);
 
-        // small white USPS stripe across the front (decal)
+        // white USPS stripe across the front (decal)
         g.setColor(new Color(220, 220, 220));
-        g.fillRect(mx + 2, my + 5, 12, 2);
+        g.fillRect(mx + 3, my + 8, 18, 3);
 
         // door slot (dark line)
         g.setColor(new Color(0, 30, 60));
-        g.fillRect(mx + 2, my + 4, 12, 1);
+        g.fillRect(mx + 3, my + 6, 18, 1);
 
         // RED FLAG raised on the right side
         g.setColor(new Color(60, 40, 25));
-        g.fillRect(mx + 16, my - 2, 1, 8);            // thin pole
+        g.fillRect(mx + 24, my - 3, 1, 12);           // thin pole
         g.setColor(new Color(220, 50, 50));
-        g.fillRect(mx + 17, my - 2, 5, 4);            // flag
+        g.fillRect(mx + 25, my - 3, 7, 6);            // flag (bigger)
         g.setColor(new Color(160, 30, 30));
-        g.fillRect(mx + 17, my + 1, 5, 1);            // flag shadow
+        g.fillRect(mx + 25, my + 1, 7, 1);            // flag shadow
     }
 }

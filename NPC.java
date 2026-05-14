@@ -26,6 +26,8 @@ public class NPC {
         } else {
             g.setColor(Color.YELLOW);
             g.fillRect(x, y, 48, 48);
+        }if (type.equals("construction")) {
+            drawConstruction(g);
         }
     }
 
@@ -112,5 +114,21 @@ public class NPC {
         g.fillRect(x + 18, y + 38, 4, 6);
         g.fillRect(x + 26, y + 38, 4, 6);
         g.fillRect(x + 32, y + 38, 4, 6);
+
+       
+        }
+
+         private void drawConstruction(Graphics g) {
+            
+            
+            g.setColor(new Color(200, 200, 50));
+            g.fillRect(x + 12, y + 12, 24, 24);
+            g.setColor(new Color(150, 150, 30));
+            g.fillRect(x + 12, y + 12, 24, 4);
+            g.fillRect(x + 12, y + 32, 24, 4);
+            g.fillRect(x + 12, y + 16, 4, 16);
+            g.fillRect(x + 32, y + 16, 4, 16);
+            
+
     }
 }

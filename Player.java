@@ -11,16 +11,20 @@ public class Player {
     int x;          // horizontal position
     int y;          // vertical position
     int speed;      // how fast they move (pixels per frame)
-    String name;
+    String username;
     int packages;   // how many packages they're carrying
     BufferedImage sprite;
-    boolean inVehicle = false;  // whether the player is in a vehicle
+    boolean inVehicle = false;
+    Outfit outfit;
+    
 
 
 
+ 
     // CONSTRUCTOR — runs when you do "new Player("Sam")"
-    public Player(String name) {
-        this.name = name;
+    public Player(String username, Outfit outfit) {
+        this.username = username;
+        this.outfit = outfit;
         this.x = 100;             // start in the middle area
         this.y = 100;
         this.speed = 4;
@@ -65,14 +69,14 @@ public class Player {
         g.fillRect(px + 44, py + 36, 16, 2);        // strap line
 
         // ---- HAT ----
-        g.setColor(new Color(20, 40, 90));
+        g.setColor(Outfit.hexToColor(outfit.getHatColor()));
         g.fillRect(px + 16, py + 4, 32, 14);
         g.setColor(new Color(45, 75, 140));         // top highlight
         g.fillRect(px + 18, py + 4, 28, 2);
         g.setColor(new Color(10, 25, 60));          // base shadow
         g.fillRect(px + 16, py + 16, 32, 2);
         // hat brim
-        g.setColor(new Color(20, 40, 90));
+        g.setColor(Outfit.hexToColor(outfit.getHatColor()));
         g.fillRect(px + 14, py + 16, 36, 5);
         g.setColor(new Color(10, 25, 60));          // shadow under brim
         g.fillRect(px + 14, py + 20, 36, 1);
@@ -93,7 +97,7 @@ public class Player {
         g.fillRect(px + 35, py + 26, 4, 4);
 
         // ---- BODY (blue uniform) ----
-        g.setColor(new Color(35, 60, 130));
+        g.setColor(Outfit.hexToColor(outfit.getShirtColor()));
         g.fillRect(px + 16, py + 32, 32, 18);
         g.setColor(new Color(60, 90, 170));         // shoulder highlight
         g.fillRect(px + 16, py + 32, 32, 2);
