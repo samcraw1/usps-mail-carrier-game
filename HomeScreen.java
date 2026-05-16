@@ -83,6 +83,32 @@ public class HomeScreen extends JPanel {
         add(shirtRow);
         add(Box.createVerticalStrut(40));
 
+
+        JLabel postmasterLabel = new JLabel("Postmaster Mode");
+        postmasterLabel.setForeground(Color.WHITE);
+        postmasterLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        add(postmasterLabel);
+        add(Box.createVerticalStrut(8));
+
+
+        JPanel postmasterRow = new JPanel();
+        postmasterRow.setBackground(new Color(20, 30, 50));
+
+        JButton fwBtn = new JButton("Fort Worth");
+        fwBtn.addActionListener(e -> FortWorthDashboard.main(new String[0]));
+        postmasterRow.add(fwBtn);
+
+        JButton lrBtn = new JButton("Little Rock");
+        lrBtn.addActionListener(e -> LittleRockDashboard.main(new String[0]));
+        postmasterRow.add(lrBtn);
+
+        JButton atlBtn = new JButton("Atlanta");
+        atlBtn.addActionListener(e -> AtlantaDashboard.main(new String[0]));
+        postmasterRow.add(atlBtn);
+
+        add(postmasterRow);
+        add(Box.createVerticalStrut(30));
+
         // ---- PLAY BUTTON ----
         JButton playButton = new JButton("PLAY");
         playButton.setFont(new Font("Arial", Font.BOLD, 20));
